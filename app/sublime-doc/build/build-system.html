@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+	<meta charset="UTF-8">
+	<title>构建系统</title>
+	<link rel="stylesheet" href="../main.css">
+</head>
+<body>
+	<h1>构建系统（批处理）</h1>
+	<div class="quote">
+		<h3>参见</h3>
+		<dl>
+			<dt><a href="#">构建系统参考</a></dt>
+			<dd>完整的文档，关于所有可能的选项，变量等。</dd>
+		</dl>
+	</div>
+	<p>内建系统使你可以通过外部程序运行你的文件。外部程序有“make”，“tidy”,解释器等。</p>
+	<p>构建系统调用的可执行文件必须在<code>PATH</code>中。关于确保Sublime Text发现<code>PATH</code>被正确设置的更多信息，请看<a href="#">构建系统排故。</a></p>
+	<h2>文件格式</h2>
+	<p>构建系统是JSON格式的文件并且使用扩展名<i>.sublime-build</i></p>
+	<h2>示例</h2>
+	<p>下面是一个构建系统的示例</p>
+	<div class="snippet">
+		<pre>
+			{
+			    "cmd": ["python", "-u", "$file"],
+			    "file_regex": "^[ ]*File \"(...*?)\", line ([0-9]*)",
+			    "selector": "source.python"
+			}
+		</pre>
+	</div>
+	<code>cmd</code>
+	<br>
+	<p>必需的。这个选项包含被实际执行的命令行：</p>
+	<div class="snippet">
+		python -u /path/to/current/file.ext
+	</div>
+	<code>file_regex</code>
+	<br>
+	<p>一个Perl风格的正则表达式用以从一个外部程序的输出中捕获错误信息。此信息被用来帮助你使用<code>F4</code>在错误实例中导航。</p>
+	<code>selector</code>
+	<br>
+	<p>如果<span class="meun">Tools | Build System | Automatic</span>选项被设置了，Sublime Text会自动地通过匹配<code>selector</code>到文件的作用域为活动文件查找对应的内建系统，</p>
+	<p>除了选项之外，你也可以在构建系统中使用一些变量，如同我们上面使用<code>$file</code>,它展开为活动缓冲区的文件名。</p>
+	<h2>在哪存储构建系统</h2>
+	<p>构建系统必须放在包文件夹中的某个位置（例如Packages/User）许多包包含自己的构建系统</p>
+	<h2>运行构建系统</h2>
+	<p>可以通过按<code>F7</code>或者从菜单<span class="menu">Tools|Build</span>运行构建系统。</p>
+</body>
+</html>

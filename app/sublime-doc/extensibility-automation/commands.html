@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+	<meta charset="UTF-8">
+	<title>命令</title>
+	<link rel="stylesheet" href="../main.css">
+</head>
+<body>
+	<h1>命令</h1>
+	<p>命令在Sublime Text中是普遍存在的：键绑定，菜单项以及宏都是通过命令系统工作的。在其它地方也能找到它们。</p>
+	<p>一些命令是在编辑器核心内实现的，但大多数作为Python插件提供。每个命令都可以从一个Python插件调用。</p>
+	<h2>命令调度</h2>
+	<p>通常，命令绑定到应用对象，一个窗口对象或者一个视图对象。然而，窗口对象会根据输入焦点调度命令，所以你可以从一个窗口对象中发出一个视图命令，正确的视图实例会被找到。</p>
+	<h2>命令剖析</h2>
+	<p>命令有由下划线分隔的名称，像<code>hot_exit</code>。并且带有一个参数的字典，字典的键必须是字符串，值必须是JSON类型。下面是一些从Python控制台运行的命令的示例。</p>
+	<div class="snippet">
+		view.run_command("goto_line", {"line": 10})<br>
+		view.run_command('insert_snippet', {"contents": "&lt;$SELECTION&gt;"})<br>
+		view.window().run_command("prompt_select_project")<br>
+	</div>
+	<div class="quote">
+		<h3>参见</h3>
+		<dl>
+			<dt><a href="">命令参考</a></dt>
+			<dd>命令参考</dd>
+		</dl>
+	</div>
+</body>
+</html>

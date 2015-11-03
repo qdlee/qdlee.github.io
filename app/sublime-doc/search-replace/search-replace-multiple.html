@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+	<meta charset="UTF-8">
+	<title>查找和替换-多个文件</title>
+	<link rel="stylesheet" href="../main.css">
+</head>
+<body>
+	<h1>查找和替换-多个文件</h1>
+	<h1>查找</h1>
+	<p>要打开文件查找面板，按<code>Ctrl + Shift + F</code>。你可以使用键盘控制查找面板和其他查找动作：</p>
+	<table>
+		<tr>
+			<td>开关正则表达式</td>
+			<td><code>Alt + R</code></td>
+		</tr>
+		<tr>
+			<td>开关大小写敏感</td>
+			<td><code>Alt + C</code></td>
+		</tr>
+		<tr>
+			<td>开关精确匹配</td>
+			<td><code>Alt + W</code></td>
+		</tr>
+		<tr>
+			<td>查找下一个</td>
+			<td><code>Enter</code></td>
+		</tr>
+	</table>
+	<h2>查找范围</h2>
+	<p>查找面板的“Where”域决定了在哪查找。你可以通过几种方式定义查找的范围：</p>
+	<ul>
+		<li>添加独立目录（Unix形式的路径，在Windows上也一样）</li>
+		<li>基于某个模式添加或排除文件</li>
+		<li>添加符号单元（<code>&lt;open folders&gt;</code>，<code>&lt;open files&gt;</code>）</li>
+	</ul>
+	<p>你可以组合这个过滤器，以逗号分隔，例如：</p>
+	<div class="sniffet">/C/Users/Joe/Top Secret,-\*.html,&lt;open files&gt;</div>
+	<p>点击查找面板中的“...”按钮以显示包含这些选项的菜单。</p>
+	<h2>结果的格式</h2>
+	<p>在查找面板中，你可以找到下列选项来自定义结果的格式</p>
+	<ul>
+		<li>在单独的缓冲区显示/在输出面板显示</li>
+		<li>显示上下文</li>
+	</ul>
+	<h2>结果内导航</h2>
+	<p>如果查找产生匹配，你可以使用下列快捷键在序列内导航。</p>
+	<table>
+		<tr>
+			<td>下一个匹配</td>
+			<td><code>F4</code></td>
+		</tr>
+		<tr>
+			<td>上一个匹配</td>
+			<td><code>Shift + F4</code></td>
+		</tr>
+	</table>
+</body>
+</html>

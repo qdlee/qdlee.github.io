@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+	<meta charset="UTF-8">
+	<title>查找和替换-单个文件</title>
+	<link rel="stylesheet" href="../main.css">
+</head>
+<body>
+	<h1>查找和替换-单个文件</h1>
+	<h1>查找</h1>
+	<p>为了打开查找面板缓冲区，按<code>Ctrl + F</code>查找面板中的一些选项和查找动作可以用键盘控制：</p>
+	<table>
+		<tr>
+			<td>开关正则表达式</td>
+			<td><code>Alt + R</code></td>
+		</tr>
+		<tr>
+			<td>开关大小写敏感</td>
+			<td><code>Alt + C</code></td>
+		</tr>
+		<tr>
+			<td>开关精确匹配</td>
+			<td><code>Alt + W</code></td>
+		</tr>
+		<tr>
+			<td>查找下一个</td>
+			<td><code>Enter</code></td>
+		</tr>
+		<tr>
+			<td>查找上一个</td>
+			<td><code>Shift + Enter</code></td>
+		</tr>
+		<tr>
+			<td>查找全部</td>
+			<td><code>Alt + Enter</code></td>
+		</tr>
+	</table>
+	<h2>增量查找</h2>
+	<p>增量查找面板可以由<code>Ctrl + I</code>调出。它和正规查找面板唯一不同的在于<code>Enter</code>键的行为：在增量查找中，它会选中缓冲区中的下一个匹配并且为你关闭查找面板。选择这个面板或者正规查找面板主要是偏好的问题。</p>
+	<h2>替换文本</h2>
+	<p>你可以使用<code>Ctrl + H</code>打开替换面板。</p>
+	<table>
+		<tr>
+			<td>替换全部</td>
+			<td><code>Ctrl + Alt + Enter</code></td>
+		</tr>
+	</table>
+	<h2>小贴士</h2>
+	<h3>在缓冲区中查找的其它方式</h3>
+	<p><a href="">Goto Anything</a>提供了操作符<code>#</code>用来在当前的缓冲区中查找，查看<a href=""> Goto Anything命令</a></p>
+	<h3>在缓冲区中查找的其它键绑定</h3>
+	<p>这些键绑定在查找面板隐藏的时候有效</p>
+	<table>
+		<tr>
+			<td>使用最近的样式向前查找</td>
+			<td><code>F3</code></td>
+		</tr>
+		<tr>
+			<td>使用最近的样式向后查找</td>
+			<td><code>Shift + F3</code></td>
+		</tr>
+		<tr>
+			<td>使用最近的样式查找全部匹配</td>
+			<td><code>Alt + F3</code></td>
+		</tr>
+	</table>
+	<h3>多行查找</h3>
+	<p>你可以输入一个多行查找样式。要输入换行符，在查找面板中按<code>Ctrl + Enter</code>。注意查找面板的大小也是可以调节的。</p>
+</body>
+</html>

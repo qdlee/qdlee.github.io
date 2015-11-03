@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+	<meta charset="UTF-8">
+	<title>代码片断</title>
+	<link rel="stylesheet" href="../main.css">
+</head>
+<body>
+	<h1>代码片断</h1>
+	<p>不论你是在编码或者是在写下一本吸血鬼畅销书,你可能都需要一遍又一遍地输入某个短的文字片断。使用代码片断来保存你自己冗长乏味的键入。代码片断是智能模板，它会为你插入文本，并自适应上下文。</p>
+	<p>要创建一个新的代码片断，选择<span class="menu">Tools | New Snippet….</span>Sublime Text会为你呈现新代码片断的骨架。</p>
+	<p>代码片断可以被存储在任一包文件夹中，但是当你在学习的时候要保持简单原则，你可以将它们保存在<code>Packages/User</code>文件夹中。</p>
+	<h2>代码片断文件格式</h2>
+	<p>代码片断通常存在于Sublime Text包中。它们是简化了的XML文件，使用<code>.sublime-snippet</code>扩展名。例如，你可以在<code>Email</code>包中有一个<code>greeting.sublime-snippet</code>文件。</p>
+	<p>一个典型的代码片断的结构如下(包含Sublime Text为了你的方便而插入的默认提示)：</p>
+	<div class="snippet">
+		<pre>
+			&lt;snippet>
+			    &lt;content>&lt;![CDATA[Type your snippet here]]>&lt;/content>
+			    &lt;!-- Optional: Tab trigger to activate the snippet -->
+			    &lt;tabTrigger>xyzzy&lt;/tabTrigger>
+			    &lt;!-- Optional: Scope the tab trigger will be active in -->
+			    &lt;scope>source.python&lt;/scope>
+			    &lt;!-- Optional: Description to show in the menu -->
+			    &lt;description>My Fancy Snippet&lt;/description>
+			&lt;/snippet>
+		</pre>
+	</div>
+	<p>
+		<code>snippet</code>元素包含Sublime Text为了获知插入什么，在哪插入和何时插入所需要的所有信息。让我们依次查看所有这些部分。
+	</p>
+	
+	<p>
+		<code class="boldcode">content</code><br>
+		实际的代码片断。代码片断支持从简单到非常复杂的模板。这两者的示例我们在后面都会看到。
+	</p>
+	<p>当你书写你自己的代码片断时请记住以下内容：</p>
+	<ul>
+		<li>如果你想要得到一个字面的<code>$</code>,你必须对它进行转义，就像这样：<code>\$</code></li>
+		<li>当书写一个包含缩进的代码片断时，始终使用制表符。当代码片断被插入时，如果选项<code>translateTabsToSpaces</code>为<code>true</code>,制表符会被转换成空格。</li>
+		<li><code>content</code>必须被包含在一个<code>&lt;![CDATA[...]]&gt;</code>部分中。如果你不这样做，代码片断不会工作！</li>
+		<li>你的代码片断的<code>content</code>必须不能包含<code>]]&gt;</code>，因为这个字符串会过早地关闭<code>&lt;![CDATA[...]]&gt;</code>部分，导致一个XML错误。要绕过这个陷阱，你可以将一个未定义的变量插入到字符串中，像这样：<code>]]$NOT_DEFINED&gt;</code>。这个修改过的字符串没有关闭content元素的<code>&lt;![CDATA[...]]&gt;</code>部分并且通过了XML解析器，但是在将代码片断插入到你的文档中之前，Sublime Text会使用一个空字符串替换掉<code>$NOT_DEFINED</code>。换句话说，当你触发代码片断的时候，你代码片断文件中<code>content</code>元素的<code>]]$NOT_DEFINED&gt;</code>会被写作<code>]]&gt;</code>。</li>
+	</ul>
+	
+	<p>
+		<code class="boldcode">tabTrigger</code><br>定义一个要插入这个代码片断必须输入的关键字序列。输入这个序列之后，只要你按<code>tab</code>键，代码片断就会开始生效。
+	</p>
+	<p>tab触发器是一个隐式的键绑定。</p>
+	
+	<p>
+		<code class="boldcode">scope</code><br>
+		scope选择器决定代码片断被激活的上下文环境。查看<a href="">作用域</a>以获得更多信息。</p>
+	<p>
+		<code class="boldcode">description</code><br>
+		代码片断在Snippets菜单显示的时候使用此信息。如果没有指定，Sublime Text默认使用代码片断的文件名。
+	</p>
+	<p>有了这些信息，你可以开始书写你自己的代码片断了，就像下一节描述的那样。</p>
+	<div class="quote">
+		<h3>注意</h3>
+		<p>为了简洁，除非另有说明，我们在例子中只包括了<code>content</code>元素的文本。</p>
+	</div>
+	<h2>代码片断特性</h2>
+	<h3>环境变量</h3>
+	<p>代码片断以环境变量的形式提供对上下文信息的访问。Sublime Text自动设置下列环境变量的值。</p>
+	<p>你也可以添加你自己的变量以提供额外的信息。这些定制变量在<code>.sublime-options</code>文件中定义。</p>
+	<table>
+		<tr>
+			<td>$PARAM1, $PARAM2...</td>
+			<td>传递给<code>insert_snippet</code>命令的参数(本文不介绍)。</td>
+		</tr>
+		<tr>
+			<td>$SELECTION</td>
+			<td>当代码片断被触发时选中的文本</td>
+		</tr>
+		<tr>
+			<td>$TM_CURRENT_LINE</td>
+			<td>当代码片断被触发时光标所在行的内容</td>
+		</tr>
+		<tr>
+			<td>$TM_CURRENT_WORD</td>
+			<td>当代码片断被触发时光标下的单词</td>
+		</tr>
+		<tr>
+			<td>$TM_FILENAME</td>
+			<td>正在编辑的文件的名称，包含扩展名。</td>
+		</tr>
+		<tr>
+			<td>$TM_FILEPATH</td>
+			<td>正在编辑的文件的路径</td>
+		</tr>
+		<tr>
+			<td>$TM_FULLNAME</td>
+			<td>用户的用户名</td>
+		</tr>
+		<tr>
+			<td>$TM_LINE_INDEX</td>
+			<td>代码片断被插入位置的列索引，从0开始。</td>
+		</tr>
+		<tr>
+			<td>$TM_LINE_NUMBER</td>
+			<td>代码片断被插入位置的行号，从1开始。</td>
+		</tr>
+		<tr>
+			<td>$TM_SELECTED_TEXT</td>
+			<td>$SELECTION的别名</td>
+		</tr>
+		<tr>
+			<td>$TM_SOFT_TABS</td>
+			<td>如果<code>translate_tabs_to_spaces</code>是真的话为<code>YES</code>,否则为<code>NO</code></td>
+		</tr>
+		<tr>
+			<td>$TM_TAB_SIZE</td>
+			<td>tab键的空格数(由<code>tab_size</code>选项控制)</td>
+		</tr>
+	</table>
+	<p>让我们看一个使用变量的代码片断的简单示例。</p>
+	<div class="snippet">
+		<pre>
+			====================================
+			USER NAME:          $TM_FULLNAME
+			FILE NAME:          $TM_FILENAME
+			 TAB SIZE:          $TM_TAB_SIZE
+			SOFT TABS:          $TM_SOFT_TABS
+			====================================
+
+			# Output:
+			====================================
+			USER NAME:          guillermo
+			FILE NAME:          test.txt
+			 TAB SIZE:          4
+			SOFT TABS:          YES
+			====================================
+		</pre>
+	</div>
+	<h3>字段</h3>
+	<p>在字段标记的帮助下，你可以通过按<code>Tab</code>键在代码片断中的字段上循环通过。字段被用来在一个代码片断被插入之后使你通过其自定义内容。</p>
+	<div class="snippet">
+		<pre>
+			First Name: $1
+			Second Name: $2
+			Address: $3
+		</pre>
+	</div>
+	<p>在上面的示例中，如果你按一次<code>Tab</code>,光标会跳到<code>$1</code>。如果你第二次按<code>Tab</code>，光标会到达<code>$2</code>，等等。你也可以使用<code>Shift+Tab</code>在序列中向后移动。如果你在光标停止在最高制表位上时按<code>Tab</code>，Sublime Text会将光标放在代码片断内容的末尾，使你恢复正常编辑状态。</p>
+	<p>如果你想要控制退出点的位置，使用<code>$0</code>标记。默认情况下，退出点是代码片断的末尾。</p>
+	<p>通过按<code>Esc</code>键，你可以随时结束字段循环。</p>
+	<h3>镜像字段</h3>
+	<p>相同的字段标记会映射彼此：当你编辑第一个的时候，剩下的会实时地被相同的值填充。</p>
+	<div class="snippet">
+		<pre>
+			First Name: $1
+			Second Name: $2
+			Address: $3
+			User name: $1
+		</pre>
+	</div>
+	<p>在这个示例中，"User name"会以与"First Name"相同的值填写。</p>
+	<h3>占位符</h3>
+	<p>通过稍微扩展一下字段语法，你可以为字段定义默认值。当你的代码片断有一个一般状况时，占位符是有用的，但是你仍然想要保持它的自定义性。</p>
+	<div class="snippet">
+		<pre>
+			First Name: ${1:Guillermo}
+			Second Name: ${2:López}
+			Address: ${3:Main Street 1234}
+			User name: $1
+		</pre>
+	</div>
+	<p>变量可以被用作点位符：</p>
+	<div class="snippet">
+		<pre>
+			First Name: ${1:Guillermo}
+			Second Name: ${2:López}
+			Address: ${3:Main Street 1234}
+			User name: ${4:$TM_FULLNAME}
+		</pre>
+	</div>
+	<p>你也可以在其它点位符之中嵌套占位符</p>
+	<div class="snippet">
+		<pre>
+			Test: ${1:Nested ${2:Placeholder}}
+		</pre>
+	</div>
+	<h3>置换</h3>
+	<p>除了占位符语法之外，使用置换，制表位可以指定更复杂的操作。使用置换来动态生成基于镜像制表位的文本。当然，你想要当作变量使用的制表位已经被映射到代码片断中的其它地方。</p>
+	<p>置换语法有下面的语法</p>
+	<ul>
+		<li><code>${var_name/regex/format_string/}</code></li>
+		<li><code>${var_name/regex/format_string/options}</code></li>
+	</ul>
+	<dl>
+		<dt>var_name</dt>
+		<dd>变量名：1,2,3</dd>
+	</dl>
+	<dl>
+		<dt>regex</dt>
+		<dd>Perl格式的正则表达式：查看<a href="http://www.boost.org/doc/libs/1_44_0/libs/regex/doc/html/boost_regex/syntax/perl_syntax.html">关于正则表达式的Boost库文档</a>。</dd>
+	</dl>
+	<dl>
+		<dt>format_string</dt>
+		<dd>查看<a href="http://www.boost.org/doc/libs/1_44_0/libs/regex/doc/html/boost_regex/format/perl_format.html">关于格式字符串的Boost库文档</a></dd>
+	</dl>
+	<dl>
+		<dt>options</dt>
+		<dd>
+			可选的，可以是以下任一一个：
+			<dl>
+				<dt>i</dt>
+				<dd>大小写敏感</dd>
+			</dl>
+			<dl>
+				<dt>g</dt>
+				<dd>替换所有出现的<code>regex</code></dd>
+			</dl>
+			<dl>
+				<dt>m</dt>
+				<dd>不要忽略字符串中的新行</dd>
+			</dl>
+		</dd>
+	</dl>
+	<p>例如，使用置换你可以轻松地给文本下划线。</p>
+	<div class="snippet">
+		<pre>
+			 Original: ${1:Hey, Joe!}
+			Transformation: ${1/./=/g}
+
+			# Output:
+
+			      Original: Hey, Joe!
+			Transformation: =========
+		</pre>
+	</div>
+</body>
+</html>

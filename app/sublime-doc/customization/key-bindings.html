@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+	<meta charset="UTF-8">
+	<title>键绑定</title>
+	<link rel="stylesheet" href="../main.css">
+</head>
+<body>
+	<h1>键绑定</h1>
+	<div class="quote">
+		<h3>参见</h3>
+		<dl>
+			<dt><a href="">键绑定参考</a></dt>
+			<dd>关于键绑定的完整文档</dd>
+		</dl>
+	</div>
+	<p>键绑定让你映射按键顺序到动作。</p>
+	<h2>文件格式</h2>
+	<p>键绑定使用JSON格式定义并存储在<code>.sublime-keymap</code>文件中。为了和平台每个更好的集成，对于Linux,OS X和Windows有不同的键映射。只有对应平台的键映射会被加载。</p>
+	<h3>示例</h3>
+	<p>下面是Windows平台默认键映射的摘录</p>
+	<div class="snippet">
+		[
+	        { "keys": ["ctrl+shift+n"], "command": "new_window" },
+	        { "keys": ["ctrl+o"], "command": "prompt_open_file" }
+		]
+	</div>
+	<h2>定义和覆盖键绑定</h2>
+	<p>Sublime Text附带一个默认的键映射(e.g.<code>Packages/Default/Default (Windows).sublime-keymap</code>)。为了覆盖键绑定，在默认的上面定义或者添加一个新的，你可以以较高的优先级将他们存储在一个单独的键映射文件中，例如<code>Packages/User/Default (Windows).sublime-keymap</code>。</p>
+	<p>查看<a href="">合并和优先级</a>以获得关于Sublime Text怎样对文件排序以合并的更多信息。</p>
+	<h2>高级键绑定</h2>
+	<p>简单的键绑定由键组合和被执行的命令组成。然而，有一些复杂的语法用来传递参数和提供上下文感知。</p>
+	<h3>传递参数</h3>
+	<p>参数由<code>args</code>关键字指定：</p>
+	<div class="snippet">
+		{ "keys": ["shift+enter"], "command": "insert", "args": {"characters": "\n"} }
+	</div>
+	<p>这里，当你按<code>Shift+Enter</code>时，<code>\n</code>被传递到<code>insert</code>命令。</p>
+	<h3>上下文</h3>
+	<p>上下文决定根据插入符号的位置或者一些其它情况，什么时候一个给定的键绑定是可用的。</p>
+	<div class="snippet">
+			{ "keys": ["escape"], "command": "clear_fields", "context":
+			        [
+			                { "key": "has_next_field", "operator": "equal", "operand": true }
+			        ]
+			}
+	</div>
+	<p>这个键绑定被翻译成如果有下一个域可用的话就清除代码片断域并且继续正常编辑。因此当你不是循环通过代码片断域时，按<code>Esc</code>不会触发这个键绑定(然而，如果<code>Esc</code>恰巧也绑定了不同的上下文，另外一些事情可能会替代发生-那可能就是<code>Esc</code>)的情况。</p>
+</body>
+</html>

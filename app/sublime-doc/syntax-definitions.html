@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+	<meta charset="UTF-8">
+	<title>语法定义</title>
+	<link rel="stylesheet" href="main.css">
+</head>
+<body>
+	<h1>语法定义</h1>
+	<p>语法定义使ST意识到编程和标记语言。最明显的，它们和颜色一起来提供语法高亮。语法定义规定了将缓冲区中的文本分为命名区域的scope。ST中的一些编辑特性广泛使用了这种细粒度的上下文信息</p>
+	<p>本质上，语法定义由用来查找文件的正则表达式组成，还有或多或少的，任意的由点号分隔的字符串叫做scope或者scope名称。对于给定正则表达式的每次出现，ST给予匹配的文本对应的scope名称。</p>
+	<div class="quote">
+		<h3>注意</h3>
+		<p>从ST Build 3084开始，一个新的语法定义格式已经被添加，使用<code>.sublime-syntax</code>扩展名。当前只有在<a href="http://www.sublimetext.com/3dev">开发者</a>频道才是可用的。</p>
+		<p>文档在此处可获得：<a href="http://www.sublimetext.com/docs/3/syntax.html">http://www.sublimetext.com/docs/3/syntax.html</a></p>
+	</div>
+	<h2>预备知识</h2>
+	<p>为了能学会本指南，你需要安装<a href="https://github.com/SublimeText/AAAPackageDev"> AAAPackageDev</a>,一个用来简化ST语法定义的创建的包。参照readme文件"Getting Started"一节的安装提示。</p>
+	<h2>文件格式</h2>
+	<p>ST使用<a href="http://en.wikipedia.org/wiki/Property_list">属性列表</a>(PList)文件来存储语法定义。然而，因为编辑XML文件是一个麻烦的任务，我们将会使用<a href="http://en.wikipedia.org/wiki/YAML"></a>来替代，并在随后将其转换成PList格式。这是AAAPackageDev包(上面提到的)起作用的地方。</p>
+	<div class="quote">
+		<h3>注意</h3>
+		<p>如果你在使用本指南过程中遭遇意外错误，有可能要归罪于AAAPackageDev或者YAML。不要立即认为你的问题是因为ST中的某个bug。</p>
+	</div>
+	<p>无论如何，如果你较喜欢使用XML工作的话，手动编辑PList文件，但始终牢记它们有关转义序列，许多标签等等的不同需求。</p>
+	<h2>Scope</h2>
+	<p>Scope是ST中的关键概念。本质上，它们是缓冲区中的命名文本区域。它们自己不做任何事情，但是在ST需要上下文信息的时候它会瞥上它们一眼。</p>
+	<p>例如，当你触发一个Snippet时，ST检查绑定到Snippet中的Scope并且查看文件中插入光标的位置。如果插入光标当前的位置匹配snippet的scope选择器，ST会激活它。否则，不会有任何变化。</p>
+	<p>Scope可以被嵌套以允许高度的颗粒化。你可以深度探索层级，这非常像CSS选择器。例如，感谢Scope选择器，只有在Python源代码中的单引号引起来的字符串中，你可以有一个活动的键绑定，而不是在其它任何语言中的单引号引起来的字符串中。</p>
+	<div class="more">
+		<h3>Scope vs Scope选择器</h3>
+		<p>Scope和Scope选择器略有区别：Scope是在语法定义中规定的名称，然而Scope选择器是被用来在像Snippet和键绑定之类的条目中定位Scope的。当创建一个新的语法定义时，你关心Scope；当你想要将某个Snippets限制在某个Scope中时，你使用Scope选择器。</p>
+	</div>
+	<p>ST从TextMate(Mac上的一个文本编辑器)继承了scope的思想。<a href="http://manual.macromates.com/en/scope_selectors">TextMate的在线手册</a>包含更多关于scope选择器的信息，这些信息对ST用户也是有用的。尤其是，颜色模式(Color Scheme)广泛利用了Scope以使用期望的颜色设计某个语言的方方面面。</p>
+	<h2>语法定义怎样工作</h2>
+	<p>在核心上说，语法定义是正则表达式搭配Scope名称的数组。ST会尝试在一个缓冲区文本中匹配这些模式并且将对应的Scope名称附加到所有出现的地方。这些正则表达式和Scope名称的对被称作规则(rule)。</p>
+	<p>规则按顺序被应用，一次一行。规则以下列顺序被应用：</p>
+	<ol>
+		<li>匹配一行中第一个位置的规则</li>
+		<li>数组中第一个出现的规则</li>
+	</ol>
+	<p>每条规则都会消耗匹配的文本区域，因此下一条规则匹配会将这些区域排除在外(只有几个例外)。在实践中，这意味着你应当更多地关心通用的规则而不是特定的规则，在你创建一个新的语法定义的时候。否则，一个贪婪的正则表达式可能会吞噬掉你想要有不同样式的部分。</p>
+	<p>独立文件中的语法定义可以被组合，并且它们也可以被递归应用。</p>
+	<h2>你的第一个语法定义</h2>
+	<p>以示例的方式，让我们为ST Snippet创建一个语法定义。我们会为实际的snippet内容设计样式，不是整个<code>.sublime-snippet</code>文件。</p>
+	<div class="quote">
+		<h3>注意</h3>
+		<p>由于语法定义主要用来启用语法高亮，我们会使用短语 to style to mean to break down a source code file into scopes。然而，要记住，语法定义和颜色是不同的东西并且scope有许多语法高亮之外的用途。</p>
+	</div>
+	<p>下面是一个snippet中我们想要设计的元素。</p>
+	<ul>
+		<li>变量(<code>$PARAM1, $USER_NAME...</code>)</li>
+		<li>简单字段(<code>$0, $1...</code>)</li>
+		<li>带占位符的复杂字段(<code>${1:Hello}</code>)</li>
+		<li>嵌套的字段(<code>${1:Hello ${2:World}!}</code>)</li>
+		<li>转义序列(<code>\\$, \\&lt;...</code>)</li>
+		<li>非法序列(<code>$, &lt;...</code>)</li>
+	</ul>
+	<p>下面是我们不想设计的元素，因为它们对于这个示例来说太过于复杂了：</p>
+	<ul>
+		<li>变量替换(<code>${1/Hello/Hi/g}</code>)</li>
+	</ul>
+	<div class="quote">
+		<h3>注意</h3>
+		<p>在继续之前，请确认你已经像上面说明的那样安装了AAAPackageDev包。</p>
+	</div>
+	<h3>创建一个新的语法定义</h3>
+	<p>要创建一个新的语法定义，跟随以下步骤：</p>
+	<ul>
+		<li>选择<span class="meun">Tools | Packages | Package Development | New Syntax Definition</span></li>
+		<li>将新文件以<code>.YAML-tmLanguage</code>文件的格式保存在你的<code>Packages/User</code>文件夹中。</li>
+	</ul>
+	<p>你现在应当看到一个像这样的文件：</p>
+	<div class="snippet">
+		<pre>
+			# [PackageDev] target_format: plist, ext: tmLanguage
+			---
+			name: Syntax Name
+			scopeName: source.syntax_name
+			fileTypes: []
+			uuid: 0da65be4-5aac-4b6f-8071-1aadb970b8d9
+
+			patterns:
+			-
+			...
+		</pre>
+	</div>
+	<p>让我们来检查关键的元素。</p>
+	<p><code class="boldcode">name</code><br>ST显示在语法定义下拉列表中的名称。使用简短的，描述性的名称。典型地，你会使用你要为其创建语法定义的编程语言的名称。</p>
+	<p><code class="boldcode">scopeName</code><br>此语法定义的最高级scope。使用<code>source.&lt;lang_name&gt;</code>或者<code>text.&lt;lang_name&gt;</code>的形式。对于编程语言，使用<code>source</code>。对于标记和其它，使用<code>text</code>。</p>
+	<p><code class="boldcode">fileTypes</code><br>这是一个文件扩展名列表(不包含前面的点)。当打开这些类型的文件时，ST会自动为它们激活此语法定义。</p>
+	<p><code class="boldcode">uuid</code><br>这是一个此语法定义的唯一标识符。每个新的语法定义会获得它自己的uuid。虽然ST自身忽略它，但不要修改它。</p>
+	<p><code class="boldcode">patterns</code><br>模式的容器。</p>
+	<p>对于我们的示例，使用下面的信息填充模板：</p>
+	<div class="snippet">
+		<pre>
+			# [PackageDev] target_format: plist, ext: tmLanguage
+			---
+			name: Sublime Snippet (Raw)
+			scopeName: source.ssraw
+			fileTypes: [ssraw]
+			uuid: 0da65be4-5aac-4b6f-8071-1aadb970b8d9
+
+			patterns:
+			-
+			...
+		</pre>
+	</div>
+	<div class="quote">
+		<h3>注意</h3>
+		<p>YAML不是一个非常严格的格式，但是当你不了解它的约定时可能会让你头痛。它支持单引号和双引号，但是如果内容不产生另一个YAML字面量的话你可能也会省略它们。如果到PList的转换失败，查看输出面板以获得关于错误的更多信息。我们稍后将会介绍如何将一个YAML格式的语法转换为PList。这也包括模板中的第一行注释。</p>
+		<p><code>---</code>和<code>...</code>是可选的。</p>
+	</div>
+	<h3>分析Patterns</h3>
+	<p><code>patterns</code>序列可以包含几种类型的元素。在下面的章节中我们会看到它们中的一些。如果你想要学习更多关于Patterns的知识，参考Textmate的在线手册。</p>
+	<h4>匹配</h4>
+	<p>匹配使用以下形式</p>
+	<div class="snippet">
+		<pre>
+			match: (?i:m)y \s+[Rr]egex
+			name: string.format
+			comment: This comment is optional.
+		</pre>
+	</div>
+	<div class="more">
+		<h3>语法定义中的正则表达式语法</h3>
+		<p>ST在语法定义中使用<a href="http://www.geocities.jp/kosako3/oniguruma/doc/RE.txt">Oniguruma</a>的正则表达式语法。一些存在的语法定义利用由这个正则表达式支持的特性。这些特征不属于perl风格的正则表达式，因此需要Oniguruma。</p>
+	</div>
+	<p><code class="boldcode">match</code><br>一个ST用来寻找匹配的正则表达式。</p>
+	<p><code class="boldcode">name</code><br>应当被应用到任何出现的<code>match</code>的scope的名称。</p>
+	<p><code class="boldcode">comment</code><br>关于此pattern的可选的注释。</p>
+	<p>让我们回到我们的示例。它看起来像这样：</p>
+	<div class="snippet">
+		<pre>
+			# [PackageDev] target_format: plist, ext: tmLanguage
+			---
+			name: Sublime Snippet (Raw)
+			scopeName: source.ssraw
+			fileTypes: [ssraw]
+			uuid: 0da65be4-5aac-4b6f-8071-1aadb970b8d9
+
+			patterns:
+			-
+			...
+		</pre>
+	</div>
+	<p>也就是说，确保<code>patterns</code>序列是空的。</p>
+	<p>现在我们可以开始给Sublime snippet添加我们的规则了。让我们从简单的字段开始。这些可以使用正则表达式匹配，像这样：</p>
+	<div class="snippet">
+		<pre>
+			\$[0-9]+
+			# or...
+			\$\d+
+		</pre>
+	</div>
+	<p>然后我们可以建立我们的pattern，像这个：</p>
+	<div class="snippet">
+		<pre>
+			name: keyword.other.ssraw
+			match: \$\d+
+			comment: Tab stops like $1, $2...
+		</pre>
+	</div>
+	<div class="more">
+		<h3>选择正确的Scope名称</h3>
+		<p>命名的scope有时不是一目了然的。察看<a href="https://manual.macromates.com/en/language_grammars#naming_conventions"></a>Textmate命名约定以获得关于scope名称的指导。AAAPackageDev会根据这些约定自动为scope名称提供补全。如果你想要获得与现在颜色的最高兼容性，重用在那里概述的基本类别是非常重要的。</p>
+		<p>颜色模式中的scope名称是硬编码的。不可能包含你所能想到的第一个scope名称。所以它们有时应用到一个标准的外加一个少见的语言上面(像应用到CSS或者Markdown)。这意味着使用相同语法定义的两种颜色模式可能使用有区别的方式渲染文本。</p>
+		<p>也要记住你应当使用最适合你的需要或者偏好的scope名称。如果你有充分的理由，将一个像<code>constant.numeric</code>这样的scope分配给数字之外的任何东西将是极好的。</p>
+	</div>
+	<p>并且我们也可以把它们添加到我们的语法定义中：</p>
+	<div class="snippet">
+		<pre>
+			# [PackageDev] target_format: plist, ext: tmLanguage
+			---
+			name: Sublime Snippet (Raw)
+			scopeName: source.ssraw
+			fileTypes: [ssraw]
+			uuid: 0da65be4-5aac-4b6f-8071-1aadb970b8d9
+
+			patterns:
+			- comment: Tab stops like $1, $2...
+			  name: keyword.other.ssraw
+			  match: \$\d+
+			...
+		</pre>
+	</div>
+	<div class="quote">
+		<h3>注意</h3>
+		<p>你应当使用两个空格的缩进。对于YAML和与上面展示的列表对齐，这是推荐的缩进。</p>
+	</div>
+	<p>我们现在做好准备将我们的文件转换成<code>.tmLanguage</code>了。因为兼容的原因，语法定义使用Textmate的<code>.tmLanguage</code>扩展名。像上面介绍的那样，它们仅仅是PList XML文件。</p>
+	<p>跟随下面的步骤来执行转换：</p>
+	<ul>
+		<li>确保在<span class="menu">Tools | Build System</span>中<code>Automatic</code>被选择了，或者选择<code>Convert to...</code></li>
+		<li>按<code>F7</code></li>
+		<li>在与<code>.YAML-tmLanguage</code>文件相同的文件夹中会为你生成一个<code>.tmLanguage</code>文件。</li>
+		<li>ST会将变化重新载入到语法定义中。</li>
+	</ul>
+	<p>假如你要知道为什么AAAPacageDev知道你想要将你的文件转换成什么：它在第一行注释中被指定。</p>
+	<p>你现在已经创建了你的第一个语法定义。接下来，打开一个新文件并且以<code>.ssraw</code>扩展名保存它。缓冲区的语法名称应该自动要的到"Sublime Snippet(Raw)"，并且如果你输入<code>$1</code>或者任何其它snippet字段，你应该能得到语法高亮。</p>
+	<p>让我们继续为环境变量创建别一个规则。</p>
+	<div class="snippet">
+		<pre>
+			comment: Variables like $PARAM1, $TM_SELECTION...
+			name: keyword.other.ssraw
+			match: \$[A-Za-z][A-Za-z0-9_]+
+		</pre>
+	</div>
+	<p>重复上面的步骤来更新<code>.tmLanguage</code>文件。</p>
+	<h3>微调匹配</h3>
+	<p>你也许已经注意到，例如，<code>$PARAM1</code>中的整个文本以同样的方式表现。根据你的需要或者你的个人偏好，你也许想要<code>$</code>突出显示。那是<code>captures</code>起作用的地方。使用捕获，你可以将一个pattern打散成多个部分以单独地对待它们。</p>
+	<p>让我们重写一下我们前面使用<code>captures</code>的pattern</p>
+	<div class="snippet">
+		<pre>
+			comment: Variables like $PARAM1, $TM_SELECTION...
+			name: keyword.other.ssraw
+			match: \$([A-Za-z][A-Za-z0-9_]+)
+			captures:
+			  '1': {name: constant.numeric.ssraw}
+		</pre>
+	</div>
+	<p>捕获将复杂性引入到你的规则中，但是它们是相当简单的。注意数字怎样从左到右的引用括号括起来的组。当然，你可以拥有你想拥有的足够多的组。</p>
+	<div class="quote">
+		<h3>注意</h3>
+		<p>在新行中写入<code>1</code>然后按tab键会自动输入<code>'1': {name: }</code>,感谢AAAPackageDev。</p>
+	</div>
+	<p>可论证地，你想要另一个scope和这一个在视觉上保持一致。去改变它。</p>
+	<div class="quote">
+		<h3>注意</h3>
+		<p>正如一般的正则表达式和替换一样，捕获组<code>'0'</code>应用到整个匹配。</p>
+	</div>
+	<h3>开始-结束规则</h3>
+	<p>到现在为止我们已经使用了一个简单的规则。虽然我们已经看到怎样将pattern切分成更小的部分，有时你会想要将一个由开始和结束标记清晰限定的源代码的较大的部分作为目标。</p>
+	<p>通过开始-结束规则，引号括起来的字面字符串或者其它限定结构是更好的处理方式。下面是一个这个规则的骨架：</p>
+	<div class="snippet">
+		<pre>
+			name:
+			begin:
+			end:
+		</pre>
+	</div>
+	<p>好的，至少在它们最简单的版本。让我们来看一个包含所有可用选项的：</p>
+	<div class="snippet">
+		<pre>
+			ame:
+			contentName:
+			begin:
+			beginCaptures:
+			  '0': {name: }
+			  # ...
+			end:
+			endCaptures:
+			  '0': {name: }
+			  # ...
+			patterns:
+			- name:
+			  match:
+			# ...
+		</pre>
+	</div>
+	<p>一些元素可能看起来很熟悉，但是它们的组合可能令人生畏。让我们来分别来看。</p>
+	<p><code class="boldcode">name</code><br>就像简单的捕获，此项将下面的scope名称设置到整个匹配，包括<code>begin</code>和<code>end</code>标记。实际上，这会为在这条规则中定义的<code>beginCaptures</code>，<code>endCaptures</code>和<code>patterns</code>创建嵌套的scope。可选的。</p>
+	<p><code class="boldcode">contentName</code><br>不像<code>name</code>，此项只将scope名称应用到封闭的文本。可选的。</p>
+	<p><code class="boldcode">begin</code><br>此scope的开始标记的正则表达式。</p>
+	<p><code class="boldcode">end</code><br>此scope的结束标记的正则表达式。</p>
+	<p><code class="boldcode">beginCaptures</code><br><code>begin</code>标记的捕获。它们像捕获一样对简单匹配有效。可选的。</p>
+	<p><code class="boldcode">endCaptures</code><br>与<code>beginCaptures</code>一样，但是作用于<code>end</code>标记。可选的。</p>
+	<p><code class="boldcode">patterns</code><br>一个pattern阵列只匹配开始-结束之间的内容。它们不匹配<code>begin</code>或者<code>end</code>文本自身。可选的。</p>
+	<p>我们会使用这条规则来表现snippet中嵌套的复杂的字段：</p>
+	<div class="snippet">
+		<pre>
+			name: variable.complex.ssraw
+			contentName: string.other.ssraw
+			begin: '(\$)(\{)([0-9]+):'
+			beginCaptures:
+			  '1': {name: keyword.other.ssraw}
+			  '3': {name: constant.numeric.ssraw}
+			end: \}
+			patterns:
+			- include: $self
+			- name: support.other.ssraw
+			  match: .
+		</pre>
+	</div>
+	<p>这是我们将在本教程中看到的最复杂的pattern。<code>begin</code>和<code>end</code>关键字是不言而喻的：它们定义了一个在<code>${<number>:</number></code>和<code>}</code>之间的封闭的区域。我们需要将开始pattern包在引号中，因为不这样的话后面的<code>:</code>会告诉解析器去期待另一个字典关键字。<code>beginCaptures</code>进一步将开始标记分成更小的scope。</p>
+	<p>然而，最有意思的部分是<code>patterns</code>递归和排序的重要性，最终在这里展现。</p>
+	<p>在上面我们已经看到字段可以被嵌套。为了解释它，我们需要递归地为嵌套的字段应用样式。这就是<code>include</code>规则所做的事，当我们完成它时<code>$self</code>值：它通过我们的开始-结束规则，它递归她应用我们的整个语法定义到被捕获的文本。这部分不包括由<code>begin</code>和<code>end</code>的正则表达式单独占据的文本。</p>
+	<p>记住，匹配的文本是被占据的；因此，它会被从下一次匹配尝试中排除并且不能被再次匹配。</p>
+	<p>要结束复杂字段，我们会将点位符作为字符串来应用样式。因为我们已经匹配了一个复杂字段中所有可能的符号，我们可以安全地告知ST给予剩下的文本(<code>.</code>)一个字面的字符串scope。注意如果我们使用增加的pattern这就不会起作用，因为这包含可能的嵌套引用。</p>
+	<div class="quote">
+		<h3>注意</h3>
+		<p>我们可能已经使用<code>contentName: string.other.ssraw</code>代替最后的pattern。但是我们介绍排序和怎样匹配的方式是消耗的。</p>
+	</div>
+	<h3>最终修整</h3>
+	<p>最后，让我们为转义序列和非法序列应用样式，然后我们可以收工了。</p>
+	<div class="snippet">
+		<pre>
+			- comment: Sequences like \$, \> and \&lt;
+			  name: constant.character.escape.ssraw
+			  match: \\[$&lt;&gt;]
+
+			- comment: Unescaped and unmatched magic characters
+			  name: invalid.illegal.ssraw
+			  match: '[$&lt;&gt;]'
+		</pre>
+	</div>
+	<p>这里唯一困难的事情是不要忘了在YAML中<code>[]</code>是包裹数组的，因此必须用引号包围起来。除此之外，如果你对正则表达式熟悉这些规则是相当简单的。</p>
+	<p>然而，你必须注意将第二条规则放在任何其它匹配<code>$</code>字符的规则之后，因为不这样的话它会被消耗并且导致下面的每一个表达式不会被匹配。</p>
+	<p>另外，即使在添加这两个附加的规则之后，注意我们来自上面的递归的开始-结束规则继续以期望的方式工作。</p>
+	<p></p>
+	<p>最后，这是最终的语法定义：</p>
+	<div class="snippet">
+		<pre>
+			# [PackageDev] target_format: plist, ext: tmLanguage
+			---
+			name: Sublime Snippet (Raw)
+			scopeName: source.ssraw
+			fileTypes: [ssraw]
+			uuid: 0da65be4-5aac-4b6f-8071-1aadb970b8d9
+
+			patterns:
+			- comment: Tab stops like $1, $2...
+			  name: keyword.other.ssraw
+			  match: \$(\d+)
+			  captures:
+			    '1': {name: constant.numeric.ssraw}
+
+			- comment: Variables like $PARAM1, $TM_SELECTION...
+			  name: keyword.other.ssraw
+			  match: \$([A-Za-z][A-Za-z0-9_]+)
+			  captures:
+			    '1': {name: constant.numeric.ssraw}
+
+			- name: variable.complex.ssraw
+			  begin: '(\$)(\{)([0-9]+):'
+			  beginCaptures:
+			    '1': {name: keyword.other.ssraw}
+			    '3': {name: constant.numeric.ssraw}
+			  end: \}
+			  patterns:
+			  - include: $self
+			  - name: support.other.ssraw
+			    match: .
+
+			- comment: Sequences like \$, \> and \&lt;
+			  name: constant.character.escape.ssraw
+			  match: \\[$&lt;&gt;]
+
+			- comment: Unescaped and unmatched magic characters
+			  name: invalid.illegal.ssraw
+			  match: '[$&lt;&gt;]'
+			...
+		</pre>
+	</div>
+	<p>使用“repository”可以有更多可用的结构和代码重用技术，但是上面的解释应该让你入门语法定义的创建。</p>
+	<div class="quote">
+		<h3>注意</h3>
+		<p>如果以前使用JSON你仍然可以这样做，因为AAAPackageDev是向后兼容的。</p>
+		<p>如果你想要考虑切换到YAML(或者从JSON或者从Plist)，它提供了一个命令叫做<code>AAAPackageDev: Convert to YAML and Rearrange Syntax Definition</code>,这条命令会以一种令人愉快的方式自动格式化结果YAML。</p>
+	</div>
+	<div class="quote">
+		<h3>参见</h3>
+		<dl>
+			<dt><a href="">语法定义</a></dt>
+			<dd>语法定义参考。</dd>
+		</dl>
+	</div>
+</body>
+</html>

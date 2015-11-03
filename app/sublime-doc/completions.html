@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+	<meta charset="UTF-8">
+	<title>Completions</title>
+	<link rel="stylesheet" href="main.css">
+</head>
+<body>
+	<h1>Completion(代码补全)</h1>
+	<div class="quote">
+		<h3>参见</h3>
+		<dl>
+			<dt><a href="http://www.sublimetext.com/docs/2/tab_completion.html">Sublime Text文档</a></dt>
+			<dd>关于此主题的官方文档。</dd>
+		</dl>
+	</div>
+	<p>Completion提供秉持IDE的精神来提供项目提示和插入代码片断的功能。Completion通过completion列表或者可选的，通过按<code>Tab</code>键。</p>
+	<p>注意，在广泛意义上的，Sublime Text会为你寻找并插入的单词的completion不限于completion文件，因为其它来源提供了被全的单词的列表，也就是：</p>
+	<ul>
+		<li>Snippet</li>
+		<li>API注入的completion</li>
+		<li>缓冲内容</li>
+	</ul>
+	<p>
+		然而，<code>.sublime-completions</code>文件是Sublime Text向你提供的为它供给completion最明确的方式。本主题涉及<code>.sublime-completions</code>文件的创建，同时涉及所有completion来源的互动。
+	</p>
+	<h2>文件格式</h2>
+	<p>completion是JSON格式的文件，使用<code>.sublime-completions</code>扩展名。completion文件中的条目可以包含snippet或者纯文本字符串。</p>
+	<p>这是一个示例(支持HTML completion：</p>
+	<div class="snippet">
+		<pre>
+			{
+			        "scope": "text.html - source - meta.tag, punctuation.definition.tag.begin",
+
+			        "completions":
+			        [
+			                { "trigger": "a", "contents": "&lt;a href=\"$1\"&gt;$0&lt;/a&gt;" },
+			                { "trigger": "abbr", "contents": "&lt;abbr&gt;$0&lt;/abbr&gt;" },
+			                { "trigger": "acronym", "contents": "&lt;acronym&gt;$0&lt;/acronym&gt;" },
+			                { "trigger": "script\t&lt;script src=\"...\" /&gt;",
+			                  "contents": "&lt;script src=\"$1\" /&gt;" },
+
+			                "ninja",
+			                "robot",
+			                "pizza"
+			        ]
+			}
+		</pre>
+	</div>
+	<dl>
+		<dt>scope</dt>
+		<dd>确定什么时候completion列表会被这个completion列表填充。</dd>
+	</dl>
+	<dl>
+		<dt>completions</dt>
+		<dd>completion数组</dd>
+	</dl>
+	<h2>completion的类型</h2>
+	<h3>纯文本</h3>
+	<p>纯文本等价于<code>trigger</code>和<code>contents</code>完全相等的条目。</p>
+	<div class="snippet">
+		<pre>
+			"foo"
+			// is equivalent to:
+			{ "trigger": "foo", "contents": "foo" }
+		</pre>
+	</div>
+	<h3>基于触发器的completion</h3>
+	<div class="snippet">
+		<pre>
+			{ "trigger": "foo", "contents": "foobar" }
+		</pre>
+	</div>
+	<dl>
+		<dt>trigger</dt>
+		<dd>显示在completion列表中的文本，当被选中时会引发<code>contents</code>被插入。
+		<p>
+			你可以使用一个<code>\t</code>制表符将trigger与关于completion的简短描述分离。描述会显示为浅灰色，右对齐，不会影响到trigger本身。
+		</p>
+		</dd>
+	</dl>
+	<dl>
+		<dt>contents</dt>
+		<dd>插入到缓冲区中的文本。可以使用<a href="">snippet特性</a>。</dd>
+	</dl>
+	<h2>completion的来源</h2>
+	<p>这些是用户可以控制的completion的来源：</p>
+	<ul>
+		<li>Snippet</li>
+		<li>.sublime-completions</li>
+		<li>通过<code>EventListener.on_query_completions()</code>的API注入completion</li>
+	</ul>
+	<p>此外，其它的completion被整合到最终列表：</p>
+	<ul>
+		<li>缓冲区中的单词</li>
+	</ul>
+	<h3>completion来源的优先级</h3>
+	<p>这是completion优先级的顺序</p>
+	<ul>
+		<li>Snippet</li>
+		<li>API注入的completion</li>
+		<li>.sublime-completions文件</li>
+		<li>缓冲区中的单词</li>
+	</ul>
+	<p>
+		如果当前前缀精确匹配Snippet的tab触发器，Snippet总是会胜出。对于剩下的completion源，会执行模糊匹配。并且，Snippet总是会输掉模糊匹配。注意这只有在completion被自动插入的时候是有意义的。当completion列表显示时，snippet会和其他项目一起列出，即使前缀只是部分匹配snippet的tab触发器。
+	</p>
+	<h2>怎样使用completion</h2>
+	<p>有两种使用completion的方式。虽然当筛选时，给予completion的优先级总是相同的，这两种方式却会产生不同的结果，就像后面解释的那样。</p>
+	<p>可以使用两种方式插入completion</p>
+	<ul>
+		<li>通过completion列表(<code>Ctrl+spacebar</code>)</li>
+		<li>通过按<code>Tab</code></li>
+	</ul>
+	<h3>completion列表</h3>
+	<p>要使用completion列表：</p>
+	<ul>
+		<li>按<code>Ctrl+spacebar</code>来打开。</li>
+		<li>可选的，再次按<code>Ctrl+spacebar</code>以选择下一条目，或者使用上下箭头。</li>
+		<li>按<code>Enter</code>或者<code>Tab</code>来确认选择(取决于<code>auto_complete_commit_on_tab</code>)</li>
+	</ul>
+	<div class="quote">
+		<h3>注意</h3>
+		<p>completion列表中的当前选项事实上可以被任何没有绑定到snippet中的标点符号确认(例如<code>.</code>。</p>
+	</div>
+	<p>completion列表可以以两种方式工作：通过显示一个建议的要补全的单词的列表，或者通过直接插入最佳匹配。自动插入只有当候选completion列表可以被缩小到一个明确的给予当前前缀的选择时才会被执行。</p>
+	<p>如果最佳completion的选项是不明确的，一个交互列表会被展示给用户。与其它项目不同，这个列表中的snippet以这种格式被展示：<br><code>tab_trigger\tname</code></p>
+	<h3>多光标下的completion</h3>
+	<p>ST也可以处理多光标下的completion，但是只有当所有光标分享同一前缀时才会打开completion列表</p>
+	<p>有效示例(<code>|</code>表示一个光标)：</p>
+	<div class="snippet">
+		<pre>
+			l|
+			some text with l|
+			l| and.l|
+		</pre>
+	</div>
+	<p>无效示例：</p>
+	<div class="snippet">
+		<pre>
+			l|
+			some text with la|
+			l| andl|
+		</pre>
+	</div>
+	<p>选择本质上是被忽略的，只有光标的位置是要紧的。因此，<code>e|[-some selection] example</code>,<code>|</code>作为光标，<code>[...]</code>作为当前的选择，补全的结果是<code>example|[-some selection] example</code>。</p>
+	<h3>通过<code>Tab</code>补全的completion</h3>
+	<p>如果你想要能够使用通过tab补全的completion，<code>tab_completion</code>设置必须被设为<code>true</code>(默认)。snippet的通过tab的补全不会被这个设置影响：它们总是基于它们的tab触发器被补全。</p>
+	<p>随着<code>tab_completion</code>的启用，项目的补全总是自动进行的，也就是说，不像在completion列表的情况下，ST总是会为你做决定。选择最好completion的规则与上述相同，但是在不明确的情况下，ST会插入被认为最合适的项目。</p>
+	<h3>插入字面的制表符(Tab)</h3>
+	<p>当<code>tab_completion</code>被启用，你可以按<code>Shift+Tab</code>来插入一个字面制表符...</p>
+</body>
+</html>

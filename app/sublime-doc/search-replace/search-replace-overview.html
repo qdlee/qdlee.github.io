@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+	<meta charset="UTF-8">
+	<title>查找和替换</title>
+	<link rel="stylesheet" href="../main.css">
+</head>
+<body>
+	<h1>查找和替换</h1>
+	<p>Sublime Text以两种主要类型的查找为特色
+		<ul>
+			<li><a href="search-replace-single">查找-单个文件</a></li>
+			<li><a href="search-replace-multiple">查找-多个文件</a></li>
+		</ul>
+	</p>
+	<p>我们会依次介绍它们，但首先让我们讨论一种查找文本的强大工具:正则表达式。</p>
+	<h2>正则表达式</h2>
+	<p>正则表达式在文本中寻找复杂模式。为了充分利用Sublime Text中的查找和替换工具，你至少应该学习基本的正则表达式。本指南不会解释怎样使用正则表达式。</p>
+	<p>打出"regular expression"令人很快厌烦，准确地说出来更令人讨厌，所以网虫通常把它简称为"regexp"或者"regex"</p>
+	<p>下面是正则表达式的可能的的样子</p>
+	<div class="snippet">(?:Sw|P)i(?:tch|s{2})\s(?:it\s)?of{2}!</div>
+	<p>为了使用正则表达式，你需要在不同的面板上首先激活它们。否则，搜索条目会按字面意思解释。</p>
+	<p>Sublime Text使用来自Boost library的Perl Regular Expression Syntax。</p>
+	<div class="quote">
+		<h3>参见</h3>
+			<dl>
+				<dt><a href="http://www.boost.org/doc/libs/1_44_0/libs/regex/doc/html/boost_regex/syntax/perl_syntax.html">Boost library正则表达式文档</a></dt>
+				<dd>关于正则表达式的文档</dd>
+			</dl>
+			<dl>
+				<dt><a href="http://www.boost.org/doc/libs/1_44_0/libs/regex/doc/html/boost_regex/format/perl_format.html">Boost library格式化字符串文档</a></dt>
+				<dd>关于格式化字符串的文档。注意Sublime Text另外解释<code>\n</code>为<code>$n</code></dd>
+			</dl>
+	</div>
+</body>
+</html>
