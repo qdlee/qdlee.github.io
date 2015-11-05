@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>banner</title>
+	<style type="text/css">
+		*{
+			margin: 0;
+			padding: 0;
+		}
+		#home_banner{
+			position: relative;
+			overflow: hidden;
+			width: 740px;
+			height: 160px;
+			margin: 50px auto;
+		}
+		.banner_bg{
+			position: absolute;
+			overflow: hidden;
+			height: 480px;
+			top: 0;
+		}
+		.banner_bg li{
+			width: 612px;
+			height: 160px;
+		}
+		.banner_bg li img{
+			width: 100%;
+		}
+		li{
+			list-style: none;
+		}
+		.banner_control{
+			position: absolute;
+			right: 0;
+			top: 0;
+			margin-left: 10px;
+		}
+		.banner_control li{
+			border: 3px #bbb solid;
+			margin-top: 4px;
+			height: 42px;
+			width: 113px;
+
+		}
+		.banner_control li img{
+			height: 100%;
+			/*opacity: .3;*/
+		}
+		.banner_control li i{
+			display: inline-block;
+			position: absolute;
+			width: 113px;
+			height: 42px;
+			background-color: #000;
+			opacity: .5;
+		}
+		.banner_control em{
+			display: inline-block;
+			position: absolute;
+			z-index: 98;
+			top: 4px;
+			left: -8px;
+			width: 127px;
+			height: 50px;
+			background: url(img/index.png) no-repeat;
+		}
+		.banner_control li.current i{
+			opacity: 0;
+		}
+		.banner_control li i{
+			opacity: .5;
+		}
+
+		.covers{
+			width: 726px;
+			margin: 0 auto;
+			/*border:1px solid red;*/
+		}
+
+        #da-thumbs{
+            font-size: 0;
+        }
+
+		#da-thumbs li{
+			list-style: none;
+			display: inline-block;
+			position: relative;
+			overflow: hidden;
+			width: 113px;
+			height: 113px;
+            border:1px solid #eee;
+            margin: 0 3px;
+		}
+		img{
+			width: 100%;
+			height: 100%;
+		}
+		#da-thumbs li div{
+			position: absolute;
+			top: 100%;
+			left: 0;
+			width: 113px;
+			height: 113px;
+			color: #fff;
+			background-color: #15B792;
+		}
+		#da-thumbs li div h2{
+			display: inline-block;
+			font-size: 26px;
+		}
+		#da-thumbs li div p{
+			font-size: 12px;
+		}
+	</style>
+
+</head>
+<body>
+	<div id="home_banner">
+	    <ul  class="banner_bg">
+	        <li class="banner_bg_1 current">
+	            <a href="#"> <img src="http://www.lagou.com/image2/M00/0D/D5/CgqLKVYg2ESARndAAAFsoii6CcM557.JPG" alt="蘑菇公寓"></a>
+	        </li>
+	        <li class="banner_bg_2">
+	            <a href="#"><img src="http://www.lagou.com/image2/M00/0D/D5/CgqLKVYg2MSAEC2tAACZCp5Bwzc260.JPG" alt="美菜网"></a>
+	        </li>
+	        <li class="banner_bg_3">
+	            <a href="#"><img src="http://www.lagou.com/image2/M00/0F/5D/CgpzWlYoVMKADxNhAACENenhKPE673.JPG" alt="plus"></a>
+	        </li>
+	    </ul>
+	    <div class="banner_control">
+	        <em></em>
+	        <ul class="thumbs">
+	            <li class="thumbs_1 current">
+	                <i></i>
+	                <img src="http://www.lagou.com/image2/M00/0D/D5/CgpzWlYg2EeATZqGAABHgQc5s2g542.JPG">
+	            </li>
+	            <li class="thumbs_2">
+	                <i></i>
+	                <img src="http://www.lagou.com/image2/M00/0D/D5/CgpzWlYg2MaAFAZPAAAMGmsLM70455.JPG">
+	            </li>
+	            <li class="thumbs_3">
+	                <i></i>
+	                <img src="http://www.lagou.com/image2/M00/0F/5D/CgpzWlYoVMWAEU6gAAAQV3MP9rA619.JPG">
+	            </li>
+	        </ul>
+	    </div>
+	</div>
+
+	<div class="covers">
+		<ul id="da-thumbs" class="da-thumbs">
+		    <li>
+		    	
+		        <a href="http://www.lagou.com/gongsi/9045.html">
+		            <img src="http://www.lagou.com/image1/M00/00/13/CgYXBlTUWDiAUvvdAACCu3QTUIw299.jpg" alt="POP">
+		            <div class="hot_info">
+		                <h2 title="POP">POP</h2>
+		                <p title="国内本细分市场牢牢占据第1名">
+		                    国内本细分市场牢牢占据第1名</p>
+		            </div>
+		        </a>
+
+		    </li>
+		    <li>
+		        <a href="http://www.lagou.com/gongsi/84170.html">
+		            <img src="http://www.lagou.com/image1/M00/3A/A6/CgYXBlWuALqADzaxAAAOsnu9BS8729.png?cc=0.5555544954258949">
+		            <div class="hot_info">
+		                <h2 title="美绚">美绚</h2>
+		                <p title="和充满激情的人共同打造最好的美容整形产品">
+		                    和充满激情的人共同打造最好的美容整形产品
+		                </p>
+		            </div>
+		        </a>
+		    </li>
+		    <li>
+		        <a href="http://www.lagou.com/gongsi/78386.html">
+		            <img src="http://www.lagou.com/image2/M00/04/4E/CgqLKVXxKC6AOJeaAAAHjkb25GI847.png">
+		            <div class="hot_info">
+		                <h2 title="大白">大白</h2>
+		                <p title="你的专属私人助理">
+		                    你的专属私人助理
+		                </p>
+		            </div>
+		        </a>
+		    </li>
+		    <li>
+		        <a href="http://www.lagou.com/gongsi/24980.html">
+		            <img src="http://www.lagou.com/image1/M00/00/33/Cgo8PFTUXI-AYRznAACv8THgp9U000.png">
+		            <div class="hot_info">
+		                <h2 title="东方网力">东方网力</h2>
+		                <p title="Building Video Internet">
+		                    Building Video Internet
+		                </p>
+		            </div>
+		        </a>
+		    </li>
+		    <li>
+		        <a href="http://www.lagou.com/gongsi/86873.html">
+		            <img src="http://www.lagou.com/image2/M00/01/B9/CgpzWlXlRiiAS0rMAAAlHH8zdoQ326.jpg?cc=0.6249667734373361">
+		            <div class="hot_info">
+		                <h2 title="天泰金控">天泰金控</h2>
+		                <p title="中国首家创新“OP2OB”模式互联网金融服务平台">
+		                    中国首家创新“OP2OB”模式互联网金融服务平台
+		                </p>
+		            </div>
+		        </a>
+		    </li>
+		    <li class="last">
+		        <a href="http://www.lagou.com/gongsi/6748.html">
+		            <img src="http://www.lagou.com/image1/M00/0B/27/CgYXBlTxf3SAXbjGAACOHNy2e30623.png">
+		            <div class="hot_info">
+		                <h2 title="云猴网">云猴网</h2>
+		                <p title="激情、有梦想，如果你有自己的梦想请来步步高电商">
+		                    激情、有梦想，如果你有自己的梦想请来步步高电商
+		                </p>
+		            </div>
+		        </a>
+		    </li>
+		</ul>
+	</div>
+
+	<script src="js/jquery/jquery.js"></script>
+	<script src="js/jquery-move.js"></script>
+	<script src="js/lagou.js"></script>
+</body>
+</html>
+
+
