@@ -1,1 +1,0 @@
-var player=function(a,b,c){this.audio=a,this.audio.src=b,this.audio.volume=c};player.prototype={play:function(){this.audio.play()},pause:function(){this.audio.pause()},load:function(a){this.audio.src=a}};
