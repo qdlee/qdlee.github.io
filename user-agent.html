@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>UserAgent</title>
+  <style>
+    table {
+      width: 100%;
+      max-width: 1000px;
+      table-layout: fixed;
+      border-collapse: collapse;
+    }
+
+    tr {
+      height: 40px;
+    }
+
+    td {
+      text-align: center;
+    }
+  </style>
+</head>
+
+<body>
+  <h1>UserAgent</h1>
+  <p id="userAgent"></p>
+  <h2>Screen Info</h2>
+  <table border="1">
+    <tbody id="screen">
+    </tbody>
+  </table>
+  <script>
+    const userAgent = navigator.userAgent;
+    document.querySelector('#userAgent').textContent = userAgent;
+    const tr = '<tr><td>{{name}}</td><td>{{value}}</td></tr>';
+    const trs = []
+    const screenData = {
+      width: screen.width,
+      height: screen.height,
+      colorDepth: screen.colorDepth,
+      pixelDepth: screen.pixelDepth,
+    }
+    Object.keys(screenData).forEach((name) => {
+      if (typeof screen[name] !== 'function') {
+        const row = tr.replace(/\{\{([a-zA-z-_0-9]+)\}\}/g, (match, p1) => {
+          return p1 === 'name' ? name : screen[name];
+        })
+        trs.push(row);
+      }
+    })
+    document.querySelector('#screen').innerHTML = trs.join('');
+  </script>
+</body>
+
+</html>
