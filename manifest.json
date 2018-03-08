@@ -26,6 +26,11 @@
       "src": "static/media/icons/icon-256x256.png",
       "sizes": "256x256",
       "type": "image/png"
+    },
+    {
+      "src": "static/media/icons/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png"
     }
   ],
   "start_url": "/index.html",
